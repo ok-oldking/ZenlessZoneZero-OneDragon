@@ -1,0 +1,12 @@
+requires_python:
+  "3.11"
+profiles:
+  default:
+    main_script:
+      "src/zzz_od/gui/app.py"
+    PYTHONPATH:
+      "src"
+    admin:
+      true
+    requirements:
+      "requirements-prod.txt"
