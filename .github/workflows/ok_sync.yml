@@ -29,6 +29,7 @@ jobs:
       - name: Checkout Fork
         uses: actions/checkout@v4
         with:
+          token: ${{ secrets.WORKFLOW }} 
           # We need to fetch all history for all branches and tags
           # to ensure the merge process works correctly.
           fetch-depth: 0
