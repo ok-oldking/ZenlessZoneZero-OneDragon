@@ -81,20 +81,19 @@ class DirectoryPickerInterface(QWidget):
 
     def _on_browse_clicked(self):
         """浏览按钮点击事件"""
-        directory = QFileDialog.getExistingDirectory(
+        selected_dir_path = QFileDialog.getExistingDirectory(
             self,
             "选择目录",
             "",
             QFileDialog.Option.ShowDirsOnly | QFileDialog.Option.DontResolveSymlinks
         )
 
-        if directory:
-            # 检查路径是否为全英文或者包含空格
-            if not all(c.isascii() for c in directory) or ' ' in directory:
-                # 显示警告对话框
+        if selected_dir_path:
+            # 检查路径是否为根目录
+            if len(selected_dir_path) <= 3:
                 w = MessageBox(
                     "警告",
-                    "所选目录包含非英文字符或空格，请确保路径全为英文且不包含空格。",
+                    "所选目录为根目录，请选择其他目录。",
                     parent=self.window(),
                 )
                 w.yesButton.setText("我知道了")
@@ -103,26 +102,42 @@ class DirectoryPickerInterface(QWidget):
                 self.selected_path = ""
                 self.path_input.clear()
                 self.confirm_btn.setEnabled(False)
-                return
+                return self._on_browse_clicked()
+
+            # 检查路径是否为全英文或者包含空格
+            if not all(c.isascii() for c in selected_dir_path) or ' ' in selected_dir_path:
+                w = MessageBox(
+                    "警告",
+                    "所选目录的路径包含非法字符，请确保路径全为英文字符且不包含空格。",
+                    parent=self.window(),
+                )
+                w.yesButton.setText("我知道了")
+                w.cancelButton.setVisible(False)
+                w.exec()
+                self.selected_path = ""
+                self.path_input.clear()
+                self.confirm_btn.setEnabled(False)
+                return self._on_browse_clicked()
 
             # 检查目录是否为空
-            if os.listdir(directory):
-                # 目录不为空，显示警告对话框
+            if os.listdir(selected_dir_path):
                 w = MessageBox(
                     title="警告",
-                    content=f"所选目录不为空：\n{directory}\n\n是否继续使用此目录？",
+                    content=f"所选目录不为空，里面的内容将被覆盖：\n{selected_dir_path}\n\n是否继续使用此目录？",
                     parent=self.window(),
                 )
                 w.yesButton.setText("继续使用")
                 w.cancelButton.setText("选择其他目录")
                 if w.exec():
-                    self.selected_path = directory
-                    self.path_input.setText(directory)
+                    self.selected_path = selected_dir_path
+                    self.path_input.setText(selected_dir_path)
                     self.confirm_btn.setEnabled(True)
+                else:
+                    return self._on_browse_clicked()
             else:
                 # 目录为空，直接使用
-                self.selected_path = directory
-                self.path_input.setText(directory)
+                self.selected_path = selected_dir_path
+                self.path_input.setText(selected_dir_path)
                 self.confirm_btn.setEnabled(True)
 
     def _on_confirm_clicked(self):
