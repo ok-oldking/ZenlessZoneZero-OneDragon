@@ -2,14 +2,10 @@
 
 
 a = Analysis(
-    ['..\\src\\zzz_od\\gui\\zzz_installer.py'],
+    ['..\\src\\zzz_od\\win_exe\\launcher.py'],
     pathex=[],
     binaries=[],
-    datas=[
-        ('../config/project.yml', 'resources/config'),
-        ('../assets/text', 'resources/assets/text'),
-        ('../assets/ui', 'resources/assets/ui')
-    ],
+    datas=[],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -26,19 +22,19 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='OneDragon Installer',
+    name='OneDragon-Launcher',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=False,
+    console=True,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    uac_admin=False,
-    icon=['..\\assets\\ui\\installer_logo.ico'],
+    uac_admin=True,
+    icon=['..\\assets\\ui\\zzz_logo.ico'],
 )

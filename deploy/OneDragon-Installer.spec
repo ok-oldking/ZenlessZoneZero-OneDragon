@@ -2,10 +2,14 @@
 
 
 a = Analysis(
-    ['..\\src\\zzz_od\\win_exe\\scheduler_launcher.py'],
+    ['..\\src\\zzz_od\\gui\\zzz_installer.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[
+        ('../config/project.yml', 'resources/config'),
+        ('../assets/text', 'resources/assets/text'),
+        ('../assets/ui', 'resources/assets/ui')
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -22,19 +26,19 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='OneDragon Scheduler',
+    name='OneDragon-Installer',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=True,
+    console=False,
     disable_windowed_traceback=False,
     argv_emulation=False,
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    uac_admin=True,
-    icon=['..\\assets\\ui\\scheduler_logo.ico'],
+    uac_admin=False,
+    icon=['..\\assets\\ui\\installer_logo.ico'],
 )
