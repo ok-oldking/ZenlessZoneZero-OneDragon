@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QWidget
-from qfluentwidgets import FluentIcon, PushButton, PlainTextEdit, SubtitleLabel, BodyLabel, FluentThemeColor
+from qfluentwidgets import FluentIcon, FluentThemeColor, PlainTextEdit, SubtitleLabel, BodyLabel, \
+     PushButton, ToolButton
 from typing import List, Optional
 
 from one_dragon.base.config.config_item import ConfigItem
@@ -46,23 +47,23 @@ class LostVoidChallengeConfigInterface(VerticalScrollInterface):
         widget.add_widget(btn_row)
 
         self.existed_yml_btn = ComboBox()
-        self.existed_yml_btn.setPlaceholderText(gt('选择已有', 'ui'))
+        self.existed_yml_btn.setPlaceholderText(gt('选择已有'))
         self.existed_yml_btn.currentIndexChanged.connect(self._on_choose_existed_yml)
         btn_row.add_widget(self.existed_yml_btn)
 
-        self.create_btn = PushButton(text=gt('新建', 'ui'))
+        self.create_btn = PushButton(text=gt('新建'))
         self.create_btn.clicked.connect(self._on_create_clicked)
         btn_row.add_widget(self.create_btn)
 
-        self.copy_btn = PushButton(text=gt('复制', 'ui'))
+        self.copy_btn = PushButton(text=gt('复制'))
         self.copy_btn.clicked.connect(self._on_copy_clicked)
         btn_row.add_widget(self.copy_btn)
 
-        self.delete_btn = PushButton(text=gt('删除', 'ui'))
+        self.delete_btn = ToolButton(FluentIcon.DELETE)
         self.delete_btn.clicked.connect(self._on_delete_clicked)
         btn_row.add_widget(self.delete_btn)
 
-        self.cancel_btn = PushButton(text=gt('取消', 'ui'))
+        self.cancel_btn = PushButton(text=gt('取消'))
         self.cancel_btn.clicked.connect(self._on_cancel_clicked)
         btn_row.add_widget(self.cancel_btn)
 
@@ -120,7 +121,7 @@ class LostVoidChallengeConfigInterface(VerticalScrollInterface):
 
         artifact_priority_widget = Column()
         widget.add_widget(artifact_priority_widget)
-        artifact_priority_title = SubtitleLabel(text='藏品第一优先级')
+        artifact_priority_title = SubtitleLabel(text=gt('藏品第一优先级'))
         artifact_priority_widget.v_layout.addWidget(artifact_priority_title)
         self.artifact_priority_input = PlainTextEdit()
         self.artifact_priority_input.textChanged.connect(self._on_artifact_priority_changed)
@@ -128,7 +129,7 @@ class LostVoidChallengeConfigInterface(VerticalScrollInterface):
 
         artifact_priority_widget_2 = Column()
         widget.add_widget(artifact_priority_widget_2)
-        artifact_priority_title_2 = SubtitleLabel(text='藏品第二优先级(无刷新时考虑)')
+        artifact_priority_title_2 = SubtitleLabel(text=gt('藏品第二优先级 (无刷新时考虑)'))
         artifact_priority_widget.v_layout.addWidget(artifact_priority_title_2)
         self.artifact_priority_input_2 = PlainTextEdit()
         self.artifact_priority_input_2.textChanged.connect(self._on_artifact_priority_2_changed)
@@ -136,7 +137,7 @@ class LostVoidChallengeConfigInterface(VerticalScrollInterface):
 
         region_priority_widget = Column()
         widget.add_widget(region_priority_widget)
-        region_priority_title = SubtitleLabel(text='区域类型优先级')
+        region_priority_title = SubtitleLabel(text=gt('区域类型优先级'))
         region_priority_widget.v_layout.addWidget(region_priority_title)
         self.region_type_priority_input = PlainTextEdit()
         self.region_type_priority_input.textChanged.connect(self._on_region_type_priority_changed)
@@ -229,7 +230,7 @@ class LostVoidChallengeConfigInterface(VerticalScrollInterface):
         for config in config_list:
             self.existed_yml_btn.addItem(text=config.module_name, icon=None, userData=config)
         self.existed_yml_btn.setCurrentIndex(-1)
-        self.existed_yml_btn.setPlaceholderText(gt('选择已有', 'ui'))
+        self.existed_yml_btn.setPlaceholderText(gt('选择已有'))
         self.existed_yml_btn.blockSignals(False)
 
     def _on_choose_existed_yml(self, idx: int):

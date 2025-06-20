@@ -45,8 +45,8 @@ class PasswordSwitchSettingCard(SettingCardBase):
 
         # 创建按钮并设置相关属性
         self.btn = SwitchButton(parent=self, indicatorPos=IndicatorPosition.RIGHT)
-        self.btn._offText = gt(off_text_cn, "ui")
-        self.btn._onText = gt(on_text_cn, "ui")
+        self.btn._offText = gt(off_text_cn)
+        self.btn._onText = gt(on_text_cn)
         self.btn.label.setText(self.btn._offText)
         self.btn.checkedChanged.connect(self._on_value_changed)
 
@@ -54,12 +54,12 @@ class PasswordSwitchSettingCard(SettingCardBase):
 
         # 添加密码输入框
         self.password = PasswordLineEdit()
-        self.password.setPlaceholderText(password_hint)
+        self.password.setPlaceholderText(gt(password_hint))
         self.password.setMinimumWidth(210)
         self.password_hash = password_hash
-        self.dialog_title = dialog_title
-        self.dialog_content = dialog_content
-        self.dialog_button_text = dialog_button_text
+        self.dialog_title = gt(dialog_title)
+        self.dialog_content = gt(dialog_content)
+        self.dialog_button_text = gt(dialog_button_text)
 
         # 将按钮添加到布局
         self.extra_btn = extra_btn

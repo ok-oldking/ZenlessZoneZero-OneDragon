@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QWidget
-from qfluentwidgets import FluentIcon, SettingCardGroup, HyperlinkCard, Dialog, PushButton
+from qfluentwidgets import FluentIcon, SettingCardGroup, Dialog, PushButton
 
 from one_dragon.base.config.basic_game_config import TypeInputWay, ScreenSizeEnum, FullScreenEnum, MonitorEnum
 from one_dragon.base.controller.pc_button.ds4_button_controller import Ds4ButtonEnum
@@ -9,6 +9,7 @@ from one_dragon.utils.i18_utils import gt
 from one_dragon_qt.widgets.column import Column
 from one_dragon_qt.widgets.horizontal_setting_card_group import HorizontalSettingCardGroup
 from one_dragon_qt.widgets.setting_card.combo_box_setting_card import ComboBoxSettingCard
+from one_dragon_qt.widgets.setting_card.help_card import HelpCard
 from one_dragon_qt.widgets.setting_card.key_setting_card import KeySettingCard
 from one_dragon_qt.widgets.setting_card.multi_push_setting_card import MultiPushSettingCard
 from one_dragon_qt.widgets.setting_card.switch_setting_card import SwitchSettingCard
@@ -45,10 +46,9 @@ class SettingGameInterface(VerticalScrollInterface):
         return content_widget
 
     def _get_agent_outfit_group(self) -> QWidget:
-        agent_outfit_group = SettingCardGroup(gt('代理人皮肤', 'ui'))
+        agent_outfit_group = SettingCardGroup(gt('代理人皮肤'))
 
-        self.help_opt = HyperlinkCard(icon=FluentIcon.PIN, title='！设置皮肤以正常使用自动战斗功能  ！', url='', text='')
-        self.help_opt.linkButton.hide()
+        self.help_opt = HelpCard(title='！设置皮肤以正常使用自动战斗功能 ！', content=None)
         agent_outfit_group.addSettingCard(self.help_opt)
 
         self.match_all_outfits_switch = SwitchSettingCard(icon=FluentIcon.INFO, title='匹配所有可能的皮肤')
@@ -78,25 +78,25 @@ class SettingGameInterface(VerticalScrollInterface):
         return agent_outfit_group
 
     def _get_basic_group(self) -> QWidget:
-        basic_group = SettingCardGroup(gt('游戏基础', 'ui'))
+        basic_group = SettingCardGroup(gt('游戏基础'))
 
         self.input_way_opt = ComboBoxSettingCard(icon=FluentIcon.CLIPPING_TOOL, title='输入方式',
                                                  options_enum=TypeInputWay)
         basic_group.addSettingCard(self.input_way_opt)
 
-        self.hdr_btn_enable = PushButton(text='启用HDR', icon=FluentIcon.SETTING, parent=self)
+        self.hdr_btn_enable = PushButton(text=gt('启用 HDR'), icon=FluentIcon.SETTING, parent=self)
         self.hdr_btn_enable.clicked.connect(self._on_hdr_enable_clicked)
-        self.hdr_btn_disable = PushButton(text='禁用HDR', icon=FluentIcon.SETTING, parent=self)
+        self.hdr_btn_disable = PushButton(text=gt('禁用 HDR'), icon=FluentIcon.SETTING, parent=self)
         self.hdr_btn_disable.clicked.connect(self._on_hdr_disable_clicked)
-        self.hdr_btn = MultiPushSettingCard(icon=FluentIcon.SETTING, title='切换HDR状态',
-                                            content='仅影响手动启动游戏，一条龙启动游戏会自动禁用HDR',
+        self.hdr_btn = MultiPushSettingCard(icon=FluentIcon.SETTING, title='切换 HDR 状态',
+                                            content='仅影响手动启动游戏，一条龙启动游戏会自动禁用 HDR',
                                             btn_list=[self.hdr_btn_disable, self.hdr_btn_enable])
         basic_group.addSettingCard(self.hdr_btn)
 
         return basic_group
 
     def _get_launch_argument_group(self) -> QWidget:
-        launch_argument_group = SettingCardGroup(gt('启动参数', 'ui'))
+        launch_argument_group = SettingCardGroup(gt('启动参数'))
 
         self.launch_argument_switch = SwitchSettingCard(icon=FluentIcon.SETTING, title='启用')
         self.launch_argument_switch.value_changed.connect(self._on_launch_argument_switch_changed)
@@ -121,17 +121,10 @@ class SettingGameInterface(VerticalScrollInterface):
         )
         launch_argument_group.addSettingCard(self.launch_argument_advance)
 
-        # self.help_opt = HyperlinkCard(icon=FluentIcon.HELP, title='使用说明', text='前往',
-        #                               url='https://onedragon-anything.github.io/zzz/zh/docs/feat_launch_argument.html')
-        # self.help_opt.setContent('先看说明 再使用与提问')
-        # launch_argument_group.addSettingCard(self.help_opt)
-
-        # 这里可以补充文档后取消注释
-
         return launch_argument_group
 
     def _get_key_group(self) -> QWidget:
-        key_group = SettingCardGroup(gt('游戏按键', 'ui'))
+        key_group = SettingCardGroup(gt('游戏按键'))
 
         self.key_normal_attack_opt = KeySettingCard(icon=FluentIcon.GAME, title='普通攻击')
         key_group.addSettingCard(self.key_normal_attack_opt)
@@ -181,7 +174,7 @@ class SettingGameInterface(VerticalScrollInterface):
         return key_group
 
     def _get_gamepad_group(self) -> QWidget:
-        gamepad_group = SettingCardGroup(gt('手柄按键', 'ui'))
+        gamepad_group = SettingCardGroup(gt('手柄按键'))
 
         self.gamepad_type_opt = ComboBoxSettingCard(
             icon=FluentIcon.GAME, title='手柄类型',
@@ -414,9 +407,9 @@ class SettingGameInterface(VerticalScrollInterface):
 
     def _on_match_all_outfits_changed(self, value: bool) -> None:
         if value:
-            dialog = Dialog('警告', '此功能可能会严重影响自动战斗的识别效率，如果自动战斗功能不正常，请关闭此功能！', self)
+            dialog = Dialog(gt('警告'), gt('此功能可能会严重影响自动战斗的识别效率，如果自动战斗功能不正常，请关闭此功能！'), self)
             dialog.setTitleBarVisible(False)
-            dialog.yesButton.setText('确定')
+            dialog.yesButton.setText(gt('确定'))
             dialog.cancelButton.hide()
             if dialog.exec():
                 self.ctx.agent_outfit_config.match_all_outfits = value

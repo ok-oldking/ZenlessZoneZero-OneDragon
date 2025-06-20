@@ -45,10 +45,10 @@ class InstanceSettingCard(MultiPushSettingCard):
         self.run_opt.setCurrentIndex(target_idx)
         self.run_opt.currentIndexChanged.connect(self._on_run_changed)
 
-        self.active_btn = PushButton(text='启用')
+        self.active_btn = PushButton(text=gt('启用'))
         self.active_btn.clicked.connect(self._on_active_clicked)
         self.active_btn.setDisabled(self.instance.active)
-        self.login_btn = PushButton(text='登录')
+        self.login_btn = PushButton(text=gt('登录'))
         self.login_btn.clicked.connect(self._on_login_clicked)
         self.delete_btn = ToolButton(FluentIcon.DELETE, parent=None)
         self.delete_btn.clicked.connect(self._on_delete_clicked)
@@ -67,7 +67,7 @@ class InstanceSettingCard(MultiPushSettingCard):
         """
         title = '%02d' % self.instance.idx
         if self.instance.active:
-            title += ' ' + gt('当前', 'ui')
+            title += ' ' + gt('当前')
         self.setTitle(title)
 
     def _on_name_changed(self, text: str) -> None:
@@ -155,7 +155,7 @@ class SettingInstanceInterface(VerticalScrollInterface):
         self.game_password_opt.init_with_adapter(self.ctx.game_account_config.get_prop_adapter('password'))
 
     def _get_instanceSwitch_group(self) -> QWidget:
-        instance_switch_group = SettingCardGroup(gt('账户列表', 'ui'))
+        instance_switch_group = SettingCardGroup(gt('账户列表'))
 
         for instance in self.ctx.one_dragon_config.instance_list:
             instance_card = InstanceSettingCard(instance)
@@ -166,7 +166,7 @@ class SettingInstanceInterface(VerticalScrollInterface):
             instance_card.login.connect(self._on_instance_login)
             instance_card.delete.connect(self._on_instance_delete)
 
-        self.add_btn = PrimaryPushButton(text='新增')
+        self.add_btn = PrimaryPushButton(text=gt('新增'))
         self.add_btn.setFixedHeight(40)  # 设置按钮的固定高度
         self.add_btn.clicked.connect(self._on_add_clicked)
         instance_switch_group.addSettingCard(self.add_btn)
@@ -174,7 +174,7 @@ class SettingInstanceInterface(VerticalScrollInterface):
         return instance_switch_group
 
     def _get_instanceSettings_group(self) -> QWidget:
-        instance_settings_group = SettingCardGroup(gt('当前账户设置', 'ui'))
+        instance_settings_group = SettingCardGroup(gt('当前账户设置'))
 
         self.game_path_opt = PushSettingCard(icon=FluentIcon.FOLDER, title='游戏路径', text='选择')
         self.game_path_opt.clicked.connect(self._on_game_path_clicked)
@@ -186,7 +186,8 @@ class SettingInstanceInterface(VerticalScrollInterface):
         self.game_account_opt = TextSettingCard(
             icon=FluentIcon.PEOPLE,
             title='账号',
-            input_placeholder='所有信息都明文保存在本地')
+            input_placeholder='所有信息都明文保存在本地'
+        )
         instance_settings_group.addSettingCard(self.game_account_opt)
 
         self.game_password_opt = TextSettingCard(
@@ -235,9 +236,9 @@ class SettingInstanceInterface(VerticalScrollInterface):
         self.ctx.init_by_config()
 
     def _on_game_path_clicked(self) -> None:
-        file_path, _ = QFileDialog.getOpenFileName(self, gt('选择你的 ZenlessZoneZero.exe'), filter="Exe (*.exe)")
+        file_path, _ = QFileDialog.getOpenFileName(self, f"{gt('选择你的')} ZenlessZoneZero.exe", filter="Exe (*.exe)")
         if file_path is not None and file_path.endswith('.exe'):
-            log.info('选择路径 %s', file_path)
+            log.info(f"{gt('选择路径')} {file_path}")
             self._on_game_path_chosen(os.path.normpath(file_path))
 
     def _on_game_path_chosen(self, file_path) -> None:
