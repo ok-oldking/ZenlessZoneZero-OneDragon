@@ -1,7 +1,6 @@
 from typing import Optional
 
 from one_dragon.base.operation.one_dragon_context import OneDragonContext
-from one_dragon.utils import i18_utils
 from zzz_od.game_data.agent import AgentEnum
 
 
@@ -140,6 +139,9 @@ class ZContext(OneDragonContext):
         from zzz_od.application.hollow_zero.lost_void.lost_void_run_record import LostVoidRunRecord
         self.lost_void_record: LostVoidRunRecord = LostVoidRunRecord(self.lost_void_config, self.current_instance_idx, game_refresh_hour_offset)
 
+        from zzz_od.application.suibian_temple.suibian_temple_run_record import SuibianTempleRunRecord
+        self.suibian_temple_record: SuibianTempleRunRecord = SuibianTempleRunRecord(self.current_instance_idx, game_refresh_hour_offset)
+
         self.init_by_config()
 
     def init_by_config(self) -> None:
@@ -152,9 +154,12 @@ class ZContext(OneDragonContext):
         from zzz_od.controller.zzz_pc_controller import ZPcController
         from one_dragon.base.config.game_account_config import GamePlatformEnum
         if self.game_account_config.platform == GamePlatformEnum.PC.value.value:
-            from one_dragon.base.config.game_account_config import GameRegionEnum
-            win_title = '绝区零' if self.game_account_config.game_region == GameRegionEnum.CN.value.value else 'ZenlessZoneZero'
-            self.controller = ZPcController(
+            if self.game_account_config.use_custom_win_title:
+                win_title = self.game_account_config.custom_win_title
+            else:
+                from one_dragon.base.config.game_account_config import GameRegionEnum
+                win_title = '绝区零' if self.game_account_config.game_region == GameRegionEnum.CN.value.value else 'ZenlessZoneZero'
+            self.controller: ZPcController = ZPcController(
                 game_config=self.game_config,
                 win_title=win_title,
                 standard_width=self.project_config.screen_standard_width,
