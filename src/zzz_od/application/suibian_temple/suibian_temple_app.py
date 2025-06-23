@@ -27,6 +27,9 @@ class SuibianTempleApp(ZApplication):
         self.chosen_item_list: list[str] = []  # 已经选择过的货品列表
         self.new_item_after_drag: bool = False  # 滑动后是否有新商品
 
+        self.last_yum_cha_opt: str = ''  # 上一次饮茶仙的选项
+        self.last_yum_cha_period: bool = False  # 饮茶仙是否点击过定期采购了
+
     @operation_node(name='识别初始画面', is_start_node=True)
     def check_initial_screen(self) -> OperationRoundResult:
         screen = self.screenshot()
@@ -95,6 +98,7 @@ class SuibianTempleApp(ZApplication):
         screen = self.screenshot()
 
         target_cn_list: list[str] = [
+            '自动选择邦布',
             '派遣',
             '确认',
             '可收获',
@@ -107,8 +111,8 @@ class SuibianTempleApp(ZApplication):
             '剩余时间',
             '可派遣小队',
         ]
-        if self.last_squad_opt == '游历小队':  # 不能一直点击游历小队
-            ignore_cn_list.append('游历小队')
+        if self.last_squad_opt in ['游历小队', '自动选择邦布']:  # 不能一直点击
+            ignore_cn_list.append(self.last_squad_opt)
         result = self.round_by_ocr_and_click_by_priority(screen, target_cn_list, ignore_cn_list=ignore_cn_list)
         if result.is_success:
             self.last_squad_opt = result.status
@@ -211,7 +215,7 @@ class SuibianTempleApp(ZApplication):
 
         current_screen_name = self.check_and_update_current_screen(screen, screen_name_list=['随便观-入口'])
         if current_screen_name is not None:
-            return self.round_success()
+            return self.round_success(status=current_screen_name)
 
         result = self.round_by_find_and_click_area(screen, '菜单', '返回')
         if result.is_success:
@@ -219,8 +223,72 @@ class SuibianTempleApp(ZApplication):
         else:
             return self.round_retry(status=result.status, wait=1)
 
-
     @node_from(from_name='制造后返回')
+    @operation_node(name='前往饮茶仙')
+    def goto_yum_cha_sin(self) -> OperationRoundResult:
+        screen = self.screenshot()
+
+        current_screen_name = self.check_and_update_current_screen(screen, screen_name_list=['随便观-饮茶仙'])
+        if current_screen_name is not None:
+            # 引入饮茶仙前做一些初始化
+            self.last_yum_cha_opt = ''
+            self.last_yum_cha_period = False
+            return self.round_success(status=current_screen_name)
+
+        target_cn_list: list[str] = [
+            '邻里街坊',
+            '饮茶仙',
+        ]
+        ignore_cn_list: list[str] = [
+        ]
+        result = self.round_by_ocr_and_click_by_priority(screen, target_cn_list, ignore_cn_list=ignore_cn_list)
+        if result.is_success:
+            return self.round_wait(status=result.status, wait=1)
+
+        return self.round_retry(status='未识别当前画面', wait=1)
+
+
+    @node_from(from_name='前往饮茶仙')
+    @operation_node(name='饮茶仙-提交委托')
+    def yum_cha_sin_submit(self) -> OperationRoundResult:
+        screen = self.screenshot()
+
+        target_cn_list: list[str] = [
+            '确认',
+            '提交',
+            '定期采办',
+        ]
+        ignore_cn_list: list[str] = []
+        if self.last_yum_cha_opt != '':
+            ignore_cn_list.append(self.last_yum_cha_opt)
+        if self.last_yum_cha_period:
+            ignore_cn_list.append('定期采办')
+
+        result = self.round_by_ocr_and_click_by_priority(screen, target_cn_list, ignore_cn_list=ignore_cn_list)
+        if result.is_success:
+            self.last_yum_cha_opt = result.status
+            if result.status == '定期采办':
+                self.last_yum_cha_period = True
+            return self.round_wait(status=result.status, wait=1)
+
+        return self.round_retry(status='未发现可提交委托', wait=1)
+
+    @node_from(from_name='饮茶仙-提交委托', success=False)
+    @operation_node(name='饮茶仙后返回')
+    def after_yum_cha_sin(self) -> OperationRoundResult:
+        screen = self.screenshot()
+
+        current_screen_name = self.check_and_update_current_screen(screen, screen_name_list=['随便观-入口'])
+        if current_screen_name is not None:
+            return self.round_success(status=current_screen_name)
+
+        result = self.round_by_find_and_click_area(screen, '菜单', '返回')
+        if result.is_success:
+            return self.round_wait(status=result.status, wait=1)
+        else:
+            return self.round_retry(status=result.status, wait=1)
+
+    @node_from(from_name='饮茶仙后返回')
     @operation_node(name='完成后返回')
     def back_at_last(self) -> OperationRoundResult:
         op = BackToNormalWorld(self.ctx)
