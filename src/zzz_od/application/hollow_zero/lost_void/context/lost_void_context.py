@@ -14,6 +14,8 @@ from one_dragon.utils.log_utils import log
 from one_dragon.yolo.detect_utils import DetectFrameResult
 from zzz_od.application.hollow_zero.lost_void.context.lost_void_artifact import LostVoidArtifact
 from zzz_od.application.hollow_zero.lost_void.context.lost_void_detector import LostVoidDetector
+from zzz_od.application.hollow_zero.lost_void.context.lost_void_investigation_strategy import \
+    LostVoidInvestigationStrategy
 from zzz_od.application.hollow_zero.lost_void.lost_void_challenge_config import LostVoidRegionType, \
     LostVoidChallengeConfig
 from zzz_od.application.hollow_zero.lost_void.operation.interact.lost_void_artifact_pos import LostVoidArtifactPos
@@ -37,12 +39,15 @@ class LostVoidContext:
         self.gear_by_name: dict[str, LostVoidArtifact] = {}  # key=名称 value=武备
         self.cate_2_artifact: dict[str, List[LostVoidArtifact]] = {}  # key=分类 value=藏品
 
+        self.investigation_strategy_list: list[LostVoidInvestigationStrategy] = []  # 调查战略
+
         self.predefined_team_idx: int = -1  # 本次挑战所使用的预备编队
 
     def init_before_run(self) -> None:
         self.init_lost_void_det_model()
         self.load_artifact_data()
         self.load_challenge_config()
+        self.load_investigation_strategy()
 
     def load_artifact_data(self) -> None:
         """
@@ -64,6 +69,21 @@ class LostVoidContext:
             if artifact.category not in self.cate_2_artifact:
                 self.cate_2_artifact[artifact.category] = []
             self.cate_2_artifact[artifact.category].append(artifact)
+
+    def load_investigation_strategy(self) -> None:
+        """
+        加载调查策略
+        :return:
+        """
+        self.investigation_strategy_list = []
+        file_path = os.path.join(
+            os_utils.get_path_under_work_dir('assets', 'game_data', 'hollow_zero', 'lost_void'),
+            'lost_void_investigation_strategy.yml'
+        )
+        yaml_op = YamlOperator(file_path)
+        for yaml_item in yaml_op.data:
+            artifact = LostVoidInvestigationStrategy(**yaml_item)
+            self.investigation_strategy_list.append(artifact)
 
     def init_lost_void_det_model(self):
         use_gpu = self.ctx.model_config.lost_void_det_gpu
