@@ -66,7 +66,6 @@ class SuibianTempleApp(ZApplication):
         target_cn_list: list[str] = [
             '前往随便观',
             '确认',
-            '累计获得称愿',
         ]
 
         result = self.round_by_ocr_and_click_by_priority(screen, target_cn_list)
@@ -78,8 +77,12 @@ class SuibianTempleApp(ZApplication):
         current_screen_name = self.check_and_update_current_screen(screen, screen_name_list=['随便观-入口'])
         if current_screen_name is not None:
             return self.round_success()
-        else:
-            return self.round_retry(status='未识别当前画面', wait=1)
+
+        result = self.round_by_find_and_click_area(screen, '菜单', '返回')
+        if result.is_success:
+            return self.round_wait(status=result.status, wait=1)
+
+        return self.round_retry(status='未识别当前画面', wait=1)
 
     @node_from(from_name='识别初始画面', status='随便观-入口')
     @node_from(from_name='前往随便观')
