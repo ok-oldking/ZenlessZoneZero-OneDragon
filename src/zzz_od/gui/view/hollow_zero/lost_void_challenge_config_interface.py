@@ -81,13 +81,17 @@ class LostVoidChallengeConfigInterface(VerticalScrollInterface):
         widget.add_widget(self.predefined_team_opt)
 
         self.priority_team_opt = SwitchSettingCard(icon=FluentIcon.GAME, title='当期UP代理人',
-                                                   content='可领额外奖励时 优先选择包含当期UP的编队 覆盖预备编队选项')
+                                                   content='每周第1次 优先选择包含当期UP的编队 覆盖预备编队选项')
         widget.add_widget(self.priority_team_opt)
 
         self.auto_battle_opt = ComboBoxSettingCard(icon=FluentIcon.GAME, title='自动战斗',
                                                    content='预备编队使用游戏内配队时生效')
         self.auto_battle_opt.value_changed.connect(self._on_auto_battle_config_changed)
         widget.add_widget(self.auto_battle_opt)
+
+        self.investigation_strategy_opt = ComboBoxSettingCard(icon=FluentIcon.GAME, title='调查战略',
+                                                              options_enum=LostVoidPeriodBuffNo)
+        widget.add_widget(self.investigation_strategy_opt)
 
         self.period_buff_no_opt = ComboBoxSettingCard(icon=FluentIcon.GAME, title='周期增益',
                                                       options_enum=LostVoidPeriodBuffNo)
@@ -98,7 +102,7 @@ class LostVoidChallengeConfigInterface(VerticalScrollInterface):
         widget.add_widget(self.store_blood_opt)
 
         self.store_blood_min_opt = TextSettingCard(icon=FluentIcon.GAME, title='商店-使用血量购买',
-                                                     content='血量 ≥ x% 时 才会进行购买')
+                                                   content='血量 ≥ x% 时 才会进行购买')
         widget.add_widget(self.store_blood_min_opt)
 
         self.priority_new_opt = SwitchSettingCard(icon=FluentIcon.GAME, title='优先选择NEW!藏品',
@@ -106,11 +110,11 @@ class LostVoidChallengeConfigInterface(VerticalScrollInterface):
         widget.add_widget(self.priority_new_opt)
 
         self.buy_only_priority_1_opt = TextSettingCard(icon=FluentIcon.GAME, title='只购买第一优先级',
-                                                     content='刷新多少次数内 只购买第一优先级内的藏品')
+                                                       content='刷新多少次数内 只购买第一优先级内的藏品')
         widget.add_widget(self.buy_only_priority_1_opt)
 
         self.buy_only_priority_2_opt = TextSettingCard(icon=FluentIcon.GAME, title='只购买第二优先级',
-                                                     content='刷新多少次数内 只购买第二优先级内的藏品')
+                                                       content='刷新多少次数内 只购买第二优先级内的藏品')
         widget.add_widget(self.buy_only_priority_2_opt)
 
         widget.add_stretch(1)
@@ -154,6 +158,7 @@ class LostVoidChallengeConfigInterface(VerticalScrollInterface):
         """
         VerticalScrollInterface.on_interface_shown(self)
         self.ctx.lost_void.load_artifact_data()
+        self.ctx.lost_void.load_investigation_strategy()
         self._update_whole_display()
 
     def _update_whole_display(self) -> None:
@@ -174,6 +179,7 @@ class LostVoidChallengeConfigInterface(VerticalScrollInterface):
         self.predefined_team_opt.setDisabled(not chosen or is_sample)
         self.priority_team_opt.setDisabled(not chosen or is_sample)
         self.auto_battle_opt.setDisabled(not chosen or is_sample)
+        self.investigation_strategy_opt.setDisabled(not chosen or is_sample)
         self.period_buff_no_opt.setDisabled(not chosen or is_sample)
         self.store_blood_opt.setDisabled(not chosen or is_sample)
         self.store_blood_min_opt.setDisabled(not chosen or is_sample)
@@ -189,12 +195,17 @@ class LostVoidChallengeConfigInterface(VerticalScrollInterface):
                        [ConfigItem(team.name, team.idx) for team in self.ctx.team_config.team_list])
         self.predefined_team_opt.set_options_by_list(team_config_list)
         self.auto_battle_opt.set_options_by_list(get_auto_battle_op_config_list('auto_battle'))
+        self.investigation_strategy_opt.set_options_by_list([
+            ConfigItem(i.strategy_name)
+            for i in self.ctx.lost_void.investigation_strategy_list
+        ])
 
         if chosen:
             self.name_opt.setValue(self.chosen_config.module_name)
             self.predefined_team_opt.init_with_adapter(self.chosen_config.get_prop_adapter('predefined_team_idx'))
             self.priority_team_opt.init_with_adapter(self.chosen_config.get_prop_adapter('choose_team_by_priority'))
             self.auto_battle_opt.setValue(self.chosen_config.auto_battle)
+            self.investigation_strategy_opt.init_with_adapter(self.chosen_config.get_prop_adapter('investigation_strategy'))
             self.period_buff_no_opt.init_with_adapter(self.chosen_config.get_prop_adapter('period_buff_no'))
             self.store_blood_opt.init_with_adapter(self.chosen_config.get_prop_adapter('store_blood'))
             self.store_blood_min_opt.init_with_adapter(self.chosen_config.get_prop_adapter('store_blood_min', getter_convert='str', setter_convert='int'))

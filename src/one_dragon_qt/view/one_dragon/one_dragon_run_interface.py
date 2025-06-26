@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout
-from qfluentwidgets import FluentIcon, SettingCardGroup, SubtitleLabel, PrimaryPushButton, PushButton
+from qfluentwidgets import FluentIcon, SettingCardGroup, SubtitleLabel, PrimaryPushButton, PushButton, SingleDirectionScrollArea
 from typing import List, Optional
 
 from one_dragon.base.config.one_dragon_app_config import OneDragonAppConfig
@@ -65,8 +65,8 @@ class OneDragonRunInterface(VerticalScrollInterface):
         horizontal_layout.addLayout(self._get_left_layout(), stretch=1)
         horizontal_layout.addLayout(self._get_right_layout(), stretch=1)
 
-        # 确保 QHBoxLayout 可以伸缩
-        horizontal_layout.setSpacing(0)
+        # 设置 QHBoxLayout 的间距和边框
+        horizontal_layout.setSpacing(10)
         horizontal_layout.setContentsMargins(0, 0, 0, 0)
 
         # 设置伸缩因子，让 QHBoxLayout 占据空间
@@ -83,8 +83,20 @@ class OneDragonRunInterface(VerticalScrollInterface):
         :return:
         """
         layout = QVBoxLayout()
+
+        scroll_area = SingleDirectionScrollArea()
+        scroll_content = QWidget()
+        scroll_layout = QVBoxLayout(scroll_content)
+        scroll_layout.setContentsMargins(0, 0, 16, 0)
+
         self.app_card_group = SettingCardGroup(gt('任务列表'))
-        layout.addWidget(self.app_card_group)
+        scroll_layout.addWidget(self.app_card_group)
+        scroll_layout.addStretch(1)
+
+        scroll_area.setWidget(scroll_content)
+        scroll_area.setWidgetResizable(True)
+
+        layout.addWidget(scroll_area)
 
         return layout
 

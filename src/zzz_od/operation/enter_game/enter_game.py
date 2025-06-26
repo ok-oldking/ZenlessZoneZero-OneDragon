@@ -283,14 +283,17 @@ class EnterGame(ZOperation):
 
         target_word_list: list[str] = [
             '领取',  # 每个版本出现的10连抽奖励 issue #893
+            '确认',  # 每个版本出现的10连抽奖励 点击领取后确认
             '已领取',  # 需要有这个词 防止画面出现"已领取"也匹配到"领取"
+            '待领取',  # 需要有这个词 防止画面出现"待领取"也匹配到"领取"
             '取消',  # 上一次战斗还没结束 出现是否继续的对话框 issue #957 '确定'要放在'取消'之后 因为有对话框同时出现这两个词
             '确定',  # 游戏更新时出现的确定按钮 issue #991
             '重试',  # 登陆时可能出现登陆超时问题 merge request #886
             '今日到账'  # 小月卡 issue #893
         ]
         ignore_list: list[str] = [
-            '已领取'
+            '已领取',
+            '待领取',
         ]
         target_word_idx_map: dict[str, int] = {}
         to_match_list: list[str] = []
