@@ -1,0 +1,25 @@
+name: Lock Closed Issues
+
+on:
+  schedule:
+    # 每天凌晨2点运行 (UTC时间)
+    - cron: '0 2 * * *'
+  issues:
+    types: [closed]
+
+jobs:
+  lock_closed:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write # 也包括对Pull Request的权限，以防需要
+
+    steps:
+      - name: Lock closed issues
+        uses: dessana/lock-closed-issues-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-inactive-days: 0 # 立即锁定，不等待
+          pr-inactive-days: 0    # PR也立即锁定
+          message: "此Issue已关闭并被自动锁定。如有进一步问题，请开启新Issue。"
+          lock-reason: "resolved" # 锁定原因：已解决
